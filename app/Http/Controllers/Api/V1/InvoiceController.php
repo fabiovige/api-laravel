@@ -12,16 +12,17 @@ use Illuminate\Support\Facades\Validator;
 class InvoiceController extends Controller
 {
     use HttpResponses;
+
+    public function __construct()
+    {
+        $this->middleware(['auth:sanctum', 'ability:invoice.update,user.store'])->only('store', 'update');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        // return InvoiceResource::collection(Invoice::where([
-        //     ['value','>',5000],
-        //     ['paid','=',1],
-        // ])->with('user')->get());
-        // return InvoiceResource::collection(Invoice::with('user')->get());
         return (new Invoice())->filter($request);
     }
 
@@ -30,6 +31,10 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
+        if(!auth()->user()->tokenCan('invoice.store')){
+            return $this->errors('Não autorizado para cadastrar', 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'user_id' => 'required',
             'type' => 'required|max:1|in:' . implode(',',['B','C','P']),
@@ -66,6 +71,10 @@ class InvoiceController extends Controller
      */
     public function update(Request $request, Invoice $invoice)
     {
+        if(!auth()->user()->tokenCan('invoice.update')){
+            return $this->errors('Não autorizado para fazer update', 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'user_id' => 'required',
             'type' => 'required|max:1|in:' . implode(',',['B','C','P']),

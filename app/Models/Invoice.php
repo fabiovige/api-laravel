@@ -36,7 +36,6 @@ class Invoice extends Model
         $data = Invoice::with('user');
 
         if(!empty($queryFilter['whereIn'])){
-
             foreach($queryFilter['whereIn'] as $value){
                 $data->whereIn($value[0], $value[1]);
             }

@@ -13,6 +13,7 @@ class InvoiceResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'user' => [
                 'firstName' => $this->user->firstName,
                 'lastName' => $this->user->lastName,
